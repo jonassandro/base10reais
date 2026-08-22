@@ -1,31 +1,17 @@
+
 (() => {
   'use strict';
-  // Link de checkout configurado
-  const CHECKOUT_URL = 'https://pay.cakto.com.br/dmtq5ne_1057849';
+  const CHECKOUT_URL = 'https://pay.cakto.com.br/38a83vk_1056254';
 
   function setupActions() {
     document.querySelectorAll('[data-action="scroll-to-pricing"]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'});
-      });
+      btn.addEventListener('click', () => document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'}));
     });
     document.querySelectorAll('[data-action="checkout"]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (CHECKOUT_URL && CHECKOUT_URL.trim() !== '' && CHECKOUT_URL !== '#') {
-          window.location.href = CHECKOUT_URL;
-        } else {
-          // Quando clicado sem checkout configurado, rola suavemente para o card de oferta
-          document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'});
-        }
-      });
+      btn.addEventListener('click', () => { window.location.href = CHECKOUT_URL; });
     });
     document.querySelectorAll('[data-action="back-to-top"]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.scrollTo({top:0, behavior:'smooth'});
-      });
+      btn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
     });
   }
 
@@ -73,7 +59,7 @@
     const img = box.querySelector('.static-lightbox-image');
     const close = () => { box.classList.remove('is-open'); box.setAttribute('aria-hidden','true'); document.body.style.overflow=''; };
     document.querySelectorAll('[data-lightbox-src]').forEach(card => {
-      card.addEventListener('click', () => {
+      card.addEventListener('click', (e) => {
         if (card.dataset.wasDragged === '1') { card.dataset.wasDragged='0'; return; }
         if (img) { img.src = card.getAttribute('data-lightbox-src') || ''; img.alt = card.querySelector('img')?.alt || 'Imagem ampliada'; }
         box.classList.add('is-open'); box.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
@@ -88,7 +74,7 @@
     const viewport = document.querySelector(`[data-carousel="${key}"]`);
     const track = document.querySelector(`[data-carousel-track="${key}"]`);
     if (!viewport || !track) return;
-    let offset = 0, setWidth = 0, dragging = false, hovered = false, lastX = 0, dragDistance = 0;
+    let offset = 0, setWidth = 0, dragging = false, hovered = false, startX = 0, lastX = 0, dragDistance = 0;
     const measure = () => { setWidth = track.scrollWidth / 4; };
     measure(); window.addEventListener('resize', measure);
     track.querySelectorAll('img').forEach(im => im.addEventListener('load', measure));
@@ -97,7 +83,7 @@
     viewport.addEventListener('mouseleave', () => hovered = false);
     viewport.addEventListener('pointerdown', e => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
-      dragging = true; lastX = e.clientX; dragDistance = 0;
+      dragging = true; startX = lastX = e.clientX; dragDistance = 0;
       try { viewport.setPointerCapture(e.pointerId); } catch(_) {}
     });
     viewport.addEventListener('pointermove', e => {
@@ -139,21 +125,7 @@
     timer=setTimeout(show,3000);
   }
 
-  function initAll() {
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-      window.lucide.createIcons();
-    }
+  document.addEventListener('DOMContentLoaded', () => {
     setupActions(); setupDate(); setupCountdown(); setupFAQ(); setupLightbox(); setupCarousel('sheets', .65); setupCarousel('reviews', .5); setupSocialProof();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAll);
-  } else {
-    initAll();
-  }
-  window.addEventListener('load', () => {
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-      window.lucide.createIcons();
-    }
   });
 })();
