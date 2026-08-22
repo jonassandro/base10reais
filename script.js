@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   // Link de checkout configurado
-  const CHECKOUT_URL = 'https://pay.cakto.com.br/dmtq5ne_1057849';
+  const CHECKOUT_URL = '';
 
   function setupActions() {
     document.querySelectorAll('[data-action="scroll-to-pricing"]').forEach(btn => {
