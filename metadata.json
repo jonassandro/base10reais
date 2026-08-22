@@ -1,0 +1,8 @@
+{
+  "name": "Base Visual da Musculação",
+  "description": "Landing page de alta conversão para o guia Base Visual da Musculação com mais de 150 fichas anatômicas e biomecânicas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
