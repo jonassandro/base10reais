@@ -83,20 +83,48 @@
   }
 
   function initAll() {
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-      window.lucide.createIcons();
-    }
     setupActions(); setupDate(); setupCountdown(); setupFAQ(); setupLightbox(); setupSocialProof();
   }
 
+  function loadNonCriticalAssets() {
+    // Google Fonts is intentionally loaded only after the page has rendered.
+    // This keeps the font CSS and font files out of the critical rendering path.
+    if (!document.getElementById('deferred-google-fonts')) {
+      const fontLink = document.createElement('link');
+      fontLink.id = 'deferred-google-fonts';
+      fontLink.rel = 'stylesheet';
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap';
+      document.head.appendChild(fontLink);
+    }
+
+    // Lucide is purely decorative here. Load it after first paint so it cannot
+    // block FCP/LCP. CTAs and carousels do not depend on this script.
+    if (!window.lucide && !document.getElementById('deferred-lucide-icons')) {
+      const lucideScript = document.createElement('script');
+      lucideScript.id = 'deferred-lucide-icons';
+      lucideScript.src = 'https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js';
+      lucideScript.async = true;
+      lucideScript.onload = () => {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      };
+      document.body.appendChild(lucideScript);
+    }
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAll);
+    document.addEventListener('DOMContentLoaded', initAll, { once: true });
   } else {
     initAll();
   }
+
   window.addEventListener('load', () => {
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-      window.lucide.createIcons();
+    const run = () => loadNonCriticalAssets();
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(run, { timeout: 1500 });
+    } else {
+      setTimeout(run, 250);
     }
-  });
+  }, { once: true });
 })();

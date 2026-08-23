@@ -1,11 +1,13 @@
-# Exercícios no Bolso — versão otimizada
+# Exercícios no Bolso — render-blocking corrigido
 
-Projeto pronto para Vercel com Vite + Tailwind compilado no build.
+Esta versão foi feita a partir da versão SEGURA/FUNCIONAL e altera apenas recursos do caminho crítico de renderização.
 
-- Tailwind não é mais compilado no navegador.
-- CTA principal da seção de preço + banner mobile abrem o checkout.
-- Demais CTAs rolam para a seção de preço.
-- Carrosséis são animações CSS infinitas e não dependem de requestAnimationFrame.
-- Hero image recebe preload/fetchpriority e imagens abaixo da dobra usam lazy loading.
-- Vídeo usa preload=none.
-- Meta Pixel e UTMify foram preservados.
+- Imagens: URLs, `src`, poster e conteúdo preservados.
+- Vídeo: URL e poster preservados.
+- Tailwind: continua compilado pelo Vite; não usa `@tailwindcss/browser` no navegador.
+- Google Fonts: carregadas somente após `window.load`/idle, sem bloquear FCP/LCP.
+- Lucide: carregado somente após `window.load`/idle, sem bloquear FCP/LCP.
+- CTAs e carrosséis: lógica preservada.
+- Meta Pixel e UTMify: preservados.
+
+Vercel: Framework Vite, Build Command `npm run build`, Output Directory `dist`.
