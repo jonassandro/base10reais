@@ -2,54 +2,5 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "images": {
-    "sizes": [
-      128,
-      160,
-      200,
-      250,
-      320,
-      360,
-      400,
-      480,
-      560,
-      640,
-      828,
-      1080
-    ],
-    "remotePatterns": [
-      {
-        "protocol": "https",
-        "hostname": "i.ibb.co",
-        "port": "",
-        "pathname": "^/.*$"
-      }
-    ],
-    "minimumCacheTTL": 604800,
-    "qualities": [
-      60,
-      62,
-      64,
-      65,
-      66,
-      68,
-      70,
-      75
-    ],
-    "formats": [
-      "image/webp"
-    ]
-  },
-  "headers": [
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ]
+  "outputDirectory": "dist"
 }
