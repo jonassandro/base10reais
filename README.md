@@ -1,13 +1,20 @@
-# Exercícios no Bolso — render-blocking corrigido
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+</div>
 
-Esta versão foi feita a partir da versão SEGURA/FUNCIONAL e altera apenas recursos do caminho crítico de renderização.
+# Run and deploy your AI Studio app
 
-- Imagens: URLs, `src`, poster e conteúdo preservados.
-- Vídeo: URL e poster preservados.
-- Tailwind: continua compilado pelo Vite; não usa `@tailwindcss/browser` no navegador.
-- Google Fonts: carregadas somente após `window.load`/idle, sem bloquear FCP/LCP.
-- Lucide: carregado somente após `window.load`/idle, sem bloquear FCP/LCP.
-- CTAs e carrosséis: lógica preservada.
-- Meta Pixel e UTMify: preservados.
+This contains everything you need to run your app locally.
 
-Vercel: Framework Vite, Build Command `npm run build`, Output Directory `dist`.
+View your app in AI Studio: https://ai.studio/apps/6f40c22b-a900-4c1f-a1c3-efceffbbcaaf
+
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`

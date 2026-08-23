@@ -4,7 +4,23 @@
   const CHECKOUT_URL = 'https://pay.cakto.com.br/dmtq5ne_1057849';
 
   function setupActions() {
-    // CTAs use real <a href> links in the HTML, so navigation works even if JS fails.
+    document.querySelectorAll('[data-action="scroll-to-pricing"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'});
+      });
+    });
+    document.querySelectorAll('[data-action="checkout"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (CHECKOUT_URL && CHECKOUT_URL.trim() !== '' && CHECKOUT_URL !== '#') {
+          window.location.href = CHECKOUT_URL;
+        } else {
+          // Quando clicado sem checkout configurado, rola suavemente para o card de oferta
+          document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'});
+        }
+      });
+    });
     document.querySelectorAll('[data-action="back-to-top"]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -68,6 +84,47 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
   }
 
+  function setupCarousel(key, speed) {
+    const viewport = document.querySelector(`[data-carousel="${key}"]`);
+    const track = document.querySelector(`[data-carousel-track="${key}"]`);
+    if (!viewport || !track) return;
+    let offset = 0, setWidth = 0, dragging = false, hovered = false, lastX = 0, dragDistance = 0;
+    const measure = () => { setWidth = track.scrollWidth / 4; };
+    measure(); window.addEventListener('resize', measure);
+    track.querySelectorAll('img').forEach(im => im.addEventListener('load', measure));
+
+    viewport.addEventListener('mouseenter', () => hovered = true);
+    viewport.addEventListener('mouseleave', () => hovered = false);
+    viewport.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      dragging = true; lastX = e.clientX; dragDistance = 0;
+      try { viewport.setPointerCapture(e.pointerId); } catch(_) {}
+    });
+    viewport.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      const dx = e.clientX - lastX; lastX = e.clientX; dragDistance += Math.abs(dx); offset -= dx;
+      if (setWidth > 0) offset = ((offset % setWidth) + setWidth) % setWidth;
+      track.style.transform = `translate3d(-${offset}px,0,0)`;
+    });
+    const endDrag = e => {
+      if (!dragging) return; dragging = false;
+      if (dragDistance >= 6) {
+        const card = e.target?.closest?.('[data-lightbox-src]');
+        if (card) card.dataset.wasDragged = '1';
+      }
+      try { if (viewport.hasPointerCapture(e.pointerId)) viewport.releasePointerCapture(e.pointerId); } catch(_) {}
+    };
+    viewport.addEventListener('pointerup', endDrag); viewport.addEventListener('pointercancel', endDrag);
+
+    const animate = () => {
+      if (setWidth > 0 && !dragging && !hovered) offset += speed;
+      if (setWidth > 0) offset = ((offset % setWidth) + setWidth) % setWidth;
+      track.style.transform = `translate3d(-${offset}px,0,0)`;
+      requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }
+
   function setupSocialProof() {
     const root = document.getElementById('live-social-proof');
     if (!root) return;
@@ -83,48 +140,20 @@
   }
 
   function initAll() {
-    setupActions(); setupDate(); setupCountdown(); setupFAQ(); setupLightbox(); setupSocialProof();
-  }
-
-  function loadNonCriticalAssets() {
-    // Google Fonts is intentionally loaded only after the page has rendered.
-    // This keeps the font CSS and font files out of the critical rendering path.
-    if (!document.getElementById('deferred-google-fonts')) {
-      const fontLink = document.createElement('link');
-      fontLink.id = 'deferred-google-fonts';
-      fontLink.rel = 'stylesheet';
-      fontLink.href = 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap';
-      document.head.appendChild(fontLink);
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
     }
-
-    // Lucide is purely decorative here. Load it after first paint so it cannot
-    // block FCP/LCP. CTAs and carousels do not depend on this script.
-    if (!window.lucide && !document.getElementById('deferred-lucide-icons')) {
-      const lucideScript = document.createElement('script');
-      lucideScript.id = 'deferred-lucide-icons';
-      lucideScript.src = 'https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js';
-      lucideScript.async = true;
-      lucideScript.onload = () => {
-        if (window.lucide && typeof window.lucide.createIcons === 'function') {
-          window.lucide.createIcons();
-        }
-      };
-      document.body.appendChild(lucideScript);
-    }
+    setupActions(); setupDate(); setupCountdown(); setupFAQ(); setupLightbox(); setupCarousel('sheets', .65); setupCarousel('reviews', .5); setupSocialProof();
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAll, { once: true });
+    document.addEventListener('DOMContentLoaded', initAll);
   } else {
     initAll();
   }
-
   window.addEventListener('load', () => {
-    const run = () => loadNonCriticalAssets();
-    if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(run, { timeout: 1500 });
-    } else {
-      setTimeout(run, 250);
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
     }
-  }, { once: true });
+  });
 })();
